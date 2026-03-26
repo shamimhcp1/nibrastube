@@ -33,7 +33,7 @@ export default async function KidsPage() {
             {allProfiles.map((profile) => (
               <form key={profile.id} action={selectProfile.bind(null, profile.id)} className="group cursor-pointer">
                 <button type="submit" className="w-full text-left bg-transparent border-0 p-0 hover:scale-105 transition-transform duration-300">
-                  <Card className="aspect-square border-0 shadow-none bg-transparent">
+                  <Card className="border-0 shadow-none bg-transparent overflow-visible">
                     <CardContent className="p-0 flex flex-col items-center">
                       <div className="w-full aspect-square bg-white rounded-3xl shadow-xl border-4 border-transparent group-hover:border-primary flex items-center justify-center text-7xl md:text-8xl transition-colors">
                         {profile.avatar || "👶"}
@@ -50,7 +50,9 @@ export default async function KidsPage() {
         )}
       </div>
 
-      <KidsFooterGate correctPin={session?.user?.parentPin || "0000"} />
+      <div className="fixed bottom-6 right-6">
+        <KidsFooterGate correctPin={session?.user?.parentPin || "0000"} />
+      </div>
     </div>
   );
 }
