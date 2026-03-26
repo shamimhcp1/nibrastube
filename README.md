@@ -1,21 +1,61 @@
-# Next.js template
+# NibrasTube - Safe Video Platform for Kids
 
-This is a Next.js template with shadcn/ui.
+NibrasTube is a parent-curated, restricted video playground for children. Parents approve specific YouTube videos and kids can only watch what has been whitelisted.
 
-## Adding components
+## 🚀 Features
 
-To add components to your app, run the following command:
+- **Parent Portal**:
+  - Secure parent authentication (JWT-based).
+  - Manage multiple kid profiles.
+  - Global YouTube search via API.
+  - One-click approval (Pinning) of safe videos.
+  - Shared management: Invite other parents to curate content.
+- **Kids Portal**:
+  - Simplified, visual "Who's Watching?" selection.
+  - Restricted content grid (Only approved videos).
+  - Internal search within the whitelist.
+  - Kid-friendly video player (minimal controls, no ads/distractions).
+- **Real-time Sync**:
+  - Instant updates to the kids' portal using **Pusher** when content is approved or removed.
 
-```bash
-npx shadcn@latest add button
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team/)
+- **Authentication**: JWT (jose) + Bcrypt
+- **Real-time**: [Pusher](https://pusher.com/)
+- **UI Components**: [Shadcn/UI](https://ui.shadcn.com/) + Tailwind CSS
+- **Icons**: [Phosphor Icons](https://phosphoricons.com/)
+
+## ⚙️ Environment Setup
+
+Create a `.env` file in the root directory:
+
+```env
+DATABASE_URL=postgresql://user:pass@host:port/dbname
+JWT_SECRET=your_secret_here
+YOUTUBE_API_KEY=your_google_api_key
+PUSHER_APP_ID=...
+PUSHER_KEY=...
+PUSHER_SECRET=...
+PUSHER_CLUSTER=...
 ```
 
-This will place the ui components in the `components` directory.
+## 🏁 Getting Started
 
-## Using components
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-To use the components in your app, import them as follows:
+2. **Push Database Schema**:
+   ```bash
+   npx drizzle-kit push
+   ```
 
-```tsx
-import { Button } from "@/components/ui/button";
-```
+3. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
