@@ -1,12 +1,14 @@
 import { db } from "@/lib/db";
 import { profiles, whitelistedVideos, videos } from "@/lib/db/schema";
 import { eq, and, ilike, inArray } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { MagnifyingGlass, Play, House } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import PusherListener from "@/components/pusher-listener";
+import { KidsFooterGate } from "@/components/kids-footer-gate";
+import { getSession } from "@/lib/auth";
 
 interface KidsPortalProps {
   params: Promise<{ profileId: string }>;
@@ -14,7 +16,15 @@ interface KidsPortalProps {
 }
 
 export default async function KidsPortalPage({ params, searchParams }: KidsPortalProps) {
+  const session = await getSession();
   const { profileId } = await params;
+
+  // Basic UUID validation to prevent DB crash
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(profileId)) {
+    redirect("/kids");
+  }
+
   const { q } = await searchParams;
   const query = q || "";
 
@@ -46,12 +56,18 @@ export default async function KidsPortalPage({ params, searchParams }: KidsPorta
       {/* Kids Header */}
       <header className="bg-white border-b-4 border-slate-100 px-6 py-4 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <Link href="/kids" className="flex items-center gap-3 group">
-             <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
-                <House size={24} weight="bold" />
-             </div>
+          <div className="flex items-center gap-3">
+             <KidsFooterGate 
+                correctPin={session?.user?.parentPin || "0000"} 
+                target="/kids"
+                trigger={
+                  <div className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
+                    <House size={32} weight="bold" />
+                  </div>
+                }
+             />
              <span className="text-xl font-black hidden md:block">NibrasTube</span>
-          </Link>
+          </div>
 
           <div className="flex-1 max-w-2xl relative">
             <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={24} weight="fill" />
@@ -103,9 +119,9 @@ export default async function KidsPortalPage({ params, searchParams }: KidsPorta
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <CardTitle className="text-xl font-bold line-clamp-2 leading-tight group-hover:underline">
+                    <h3 className="text-xl font-bold line-clamp-2 leading-tight group-hover:underline">
                       {video.title}
-                    </CardTitle>
+                    </h3>
                     <p className="text-slate-500 mt-2 font-medium">{video.channelTitle}</p>
                   </CardContent>
                 </Card>
@@ -114,6 +130,14 @@ export default async function KidsPortalPage({ params, searchParams }: KidsPorta
           </div>
         )}
       </main>
+
+      {/* Parental Gate to switch to Parent Portal altogether */}
+      <div className="fixed bottom-6 right-6">
+        <KidsFooterGate 
+          correctPin={session?.user?.parentPin || "0000"} 
+          target="/parent/dashboard"
+        />
+      </div>
     </div>
   );
 }

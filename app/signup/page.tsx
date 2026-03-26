@@ -29,6 +29,11 @@ export default function SignupPage() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="pin">Parental PIN (4 digits)</Label>
+              <Input id="pin" name="pin" type="text" inputMode="numeric" pattern="[0-9]{4}" maxLength={4} placeholder="0000" required />
+              <p className="text-xs text-muted-foreground">This PIN will be used to access parent settings and switch profiles.</p>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full py-6 text-lg">

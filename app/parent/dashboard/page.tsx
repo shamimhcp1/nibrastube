@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { MagnifyingGlass, PushPin, Trash, Users, Video } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
+import { logoutAction } from "@/app/actions/auth";
+
 interface DashboardProps {
   searchParams: Promise<{ q?: string; profileId?: string }>;
 }
@@ -66,14 +68,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         </div>
         <div className="flex gap-2">
            <Link href="/parent/profiles">
-            <Button variant="outline"><Users className="mr-2" /> Manage Profiles</Button>
+            <Button variant="outline"><Users className="mr-2" /> Manage Kids</Button>
           </Link>
-          <form action={async () => {
-             "use server";
-             const { logoutAction } = await import("@/app/actions/auth");
-             await logoutAction();
-          }}>
-            <Button variant="ghost">Logout</Button>
+          <form action={logoutAction}>
+            <Button variant="ghost" type="submit">Logout</Button>
           </form>
         </div>
       </div>

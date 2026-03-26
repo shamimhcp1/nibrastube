@@ -12,14 +12,16 @@ const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().min(2),
+  pin: z.string().optional(), // Pin is optional in schema, default handled in formData extraction
 });
 
 export async function signup(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
+  const pin = (formData.get("pin") as string) || "0000"; // Defaulting to 0000 if not provided
 
-  const validated = signupSchema.safeParse({ email, password, name });
+  const validated = signupSchema.safeParse({ email, password, name, pin });
   if (!validated.success) {
     return;
   }
@@ -41,10 +43,11 @@ export async function signup(formData: FormData): Promise<void> {
       email,
       passwordHash,
       name,
+      parentPin: pin,
     })
     .returning();
 
-  await authLogin({ id: newUser.id, email: newUser.email, name: newUser.name });
+  await authLogin({ id: newUser.id, email: newUser.email, name: newUser.name, parentPin: newUser.parentPin });
   redirect("/parent/dashboard");
 }
 
@@ -70,7 +73,7 @@ export async function login(formData: FormData): Promise<void> {
     return;
   }
 
-  await authLogin({ id: user.id, email: user.email, name: user.name });
+  await authLogin({ id: user.id, email: user.email, name: user.name, parentPin: user.parentPin });
   redirect("/parent/dashboard");
 }
 

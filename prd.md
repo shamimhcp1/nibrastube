@@ -15,19 +15,23 @@ NibrasTube aims to provide a 100% safe, parent-curated video experience for chil
 ### 3.1 Parent Portal
 
 - **Secure Authentication**: Parents create an account via Email/Password or Social Login.
-- **Kid Profiles**: Create multiple kid profiles with custom names and avatars.
-- **Shared Management**: Invite another parent (e.g., spouse) to manage the same kid profiles.
+- **Manage Kids**: Create multiple entries for children with custom names and avatars.
+- **Shared Management**: Invite another parent (e.g., spouse) to manage the same kids.
 - **Whitelisting (The "Pin" Feature)**:
   - Search global YouTube via the YouTube Data API.
   - Preview videos before approving.
-  - Pin videos to one or more kid profiles.
+  - Pin videos to one or more kids.
 - **Dashboard**: View what each kid is watching and manage the approved list.
 
 ### 3.2 Kids Portal
 
 - **Whitelisted Content Grid**: A simple, visual grid of ONLY the videos pinned by parents.
 - **Internal Search**: Kids can search _only_ within their approved list of videos.
-- **Restricted Environment**: No access to global YouTube search, no "related videos" outside the whitelist, and no comments/engagement features.
+- **Child Safety & Restrictions**:
+    - **Profile Isolation**: Kids are locked to their assigned profile; switching requires parental PIN verification.
+    - **Parental Gate**: Accessing any `/parent` route or switching profiles requires a secure 4-digit Parent PIN.
+    - **Restricted Player**: YouTube branding and "Watch on YouTube" links are hidden to keep kids within the safe environment.
+    - **No Data Leakage**: No access to global YouTube search, related videos, or engagement features (comments/likes).
 - **Kid-Friendly Player**: Simplified playback controls (Play/Pause, Seek).
 
 ## 4. User Flows

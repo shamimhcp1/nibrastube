@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Trash, Plus, UserCircle } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
+import { logoutAction } from "@/app/actions/auth";
+
 export default async function ProfilesPage() {
   const session = await getSession();
   if (!session) redirect("/login");
@@ -24,12 +26,17 @@ export default async function ProfilesPage() {
     <div className="container mx-auto py-10 px-4">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Kid Profiles</h1>
-          <p className="text-muted-foreground mt-2">Manage profiles for your children</p>
+          <h1 className="text-4xl font-bold tracking-tight">Manage Kids</h1>
+          <p className="text-muted-foreground mt-2">Manage settings and content for your children</p>
         </div>
-        <Link href="/parent/dashboard">
-          <Button variant="outline">Back to Dashboard</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/parent/dashboard">
+            <Button variant="outline">Back to Dashboard</Button>
+          </Link>
+          <form action={logoutAction}>
+            <Button variant="ghost" type="submit">Logout</Button>
+          </form>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -79,7 +86,7 @@ export default async function ProfilesPage() {
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-2">
               <Plus size={32} className="text-muted-foreground" />
             </div>
-            <CardTitle>Add New Profile</CardTitle>
+            <CardTitle>Add New Kid</CardTitle>
           </CardHeader>
           <CardContent className="w-full">
             <form action={createProfile} className="space-y-4">
@@ -91,7 +98,7 @@ export default async function ProfilesPage() {
                 <Label htmlFor="avatar">Avatar (Emoji)</Label>
                 <Input id="avatar" name="avatar" placeholder="👦" defaultValue="👦" />
               </div>
-              <Button type="submit" className="w-full mt-4">Create Profile</Button>
+              <Button type="submit" className="w-full mt-4">Add Kid</Button>
             </form>
           </CardContent>
         </Card>

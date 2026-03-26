@@ -5,6 +5,8 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, House } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { KidsFooterGate } from "@/components/kids-footer-gate";
+import { getSession } from "@/lib/auth";
 
 interface WatchPageProps {
   params: Promise<{ profileId: string; videoId: string }>;
@@ -12,6 +14,7 @@ interface WatchPageProps {
 
 export default async function WatchPage({ params }: WatchPageProps) {
   const { profileId, videoId } = await params;
+  const session = await getSession();
 
   // 1. Verify profile and video approval
   const profile = await db.query.profiles.findFirst({
@@ -65,9 +68,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
         <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-[32px] overflow-hidden shadow-2xl border-4 border-slate-800 relative group">
            <iframe
               className="w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1&showinfo=0`}
-              title={video.title}
-              frameBorder="0"
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
            ></iframe>
