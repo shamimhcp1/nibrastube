@@ -7,6 +7,7 @@ NibrasTube is a parent-curated, restricted video playground for children. Parent
 - **Parent Portal**:
   - Secure parent authentication (JWT-based).
   - **Manage Kids**: Create and curate content for multiple children (including set/reset Child PINs).
+  - **Playlists**: Organize videos into custom playlists for better categorization.
   - **Parent PIN**: 4-digit security PIN for administrative control and profile management.
   - Global YouTube search via API.
   - One-click approval (Pinning) of safe videos.
@@ -16,7 +17,7 @@ NibrasTube is a parent-curated, restricted video playground for children. Parent
   - **Authenticated Access**: Protected route requiring Parent login.
   - **Who's Watching?**: Parent-scoped profile selection based on the logged-in account.
   - **PIN Protected**: Profile entry requires Parent or Child PIN (Default: 0000); switching profiles is locked behind the Parent PIN.
-  - Restricted content grid (Only approved videos).
+  - **Restricted Content Grid**: Only approved videos, organized by parent-created **Playlists**.
   - Internal search within the whitelist.
   - Kid-friendly video player (minimal controls, no ads/distractions).
 - **Real-time Sync**:

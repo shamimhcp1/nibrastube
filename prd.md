@@ -17,11 +17,12 @@ NibrasTube aims to provide a 100% safe, parent-curated video experience for chil
 - **Secure Authentication**: Parents create an account via Email/Password or Social Login.
 - **Manage Kids**: Create multiple entries for children with custom names, avatars, and a 4-digit Kid PIN (Default: 0000).
 - **Parental Controls**: Manage and reset Child PINs from the parent dashboard.
+- **Playlists**: Create and manage custom playlists (e.g., "Learning", "Cartoons") for each child.
 - **Shared Management**: Invite another parent (e.g., spouse) to manage the same kids.
 - **Whitelisting (The "Pin" Feature)**:
   - Search global YouTube via the YouTube Data API.
   - Preview videos before approving.
-  - Pin videos to one or more kids.
+  - Pin videos to one or more kids and assign them to specific playlists.
 - **Dashboard**: View what each kid is watching and manage the approved list.
 
 ### 3.2 Kids Portal
@@ -29,6 +30,7 @@ NibrasTube aims to provide a 100% safe, parent-curated video experience for chil
 - **Authenticated Access**: The Kids Portal (`/kids`) is a protected route requiring a valid Parent login.
 - **Parent-Scoped Profiles**: Parents can only see and access kids' profiles associated with their own account (or shared with them).
 - **Whitelisted Content Grid**: A simple, visual grid of ONLY the videos pinned by parents.
+- **Playlist Browsing**: Kids can browse their approved content organized by playlists created by their parents.
 - **Internal Search**: Kids can search _only_ within their approved list of videos.
 - **Child Safety & Restrictions**:
     - **Profile Entrance Control**: Entering a kid profile requires either the 4-digit Parent PIN or the profile's specific 4-digit Kid PIN.
