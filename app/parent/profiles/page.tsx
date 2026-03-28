@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
-import { profiles } from "@/lib/db/schema";
+import { profiles, invites, sharedAccess } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { createProfile, deleteProfile } from "@/app/actions/profiles";
 import { inviteParent } from "@/app/actions/invites";
@@ -14,12 +14,24 @@ import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
 
+import { createInviteAction } from "@/app/actions/invites";
+
 export default async function ProfilesPage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
   const kidProfiles = await db.query.profiles.findMany({
     where: eq(profiles.parentId, session.user.id),
+  });
+
+  // Fetch all invites for these profiles
+  const allInvites = await db.query.invites.findMany({
+    where: inArray(invites.profileId, kidProfiles.map(p => p.id))
+  });
+
+  // Fetch shared access
+  const allShared = await db.query.sharedAccess.findMany({
+    where: inArray(sharedAccess.profileId, kidProfiles.map(p => p.id))
   });
 
   return (
@@ -67,16 +79,31 @@ export default async function ProfilesPage() {
               </div>
               
               <div className="w-full pt-4 border-t border-slate-200">
-                 <p className="text-xs font-bold text-slate-500 uppercase mb-2 tracking-widest">Share Access</p>
-                 <form action={async (formData) => {
-                    "use server";
-                    const email = formData.get("email") as string;
-                    if (email) await inviteParent(profile.id, email);
-                 }} className="flex gap-2">
-                    <Input name="email" placeholder="Spouse's email..." className="h-9 text-xs" type="email" required />
-                    <Button size="sm" variant="secondary" className="h-9 px-3">Invite</Button>
-                 </form>
-              </div>
+                  <p className="text-xs font-bold text-slate-500 uppercase mb-2 tracking-widest">Share Access</p>
+                  <form action={createInviteAction} className="flex gap-2 mb-4">
+                     <input type="hidden" name="profileId" value={profile.id} />
+                     <Input name="email" placeholder="Spouse's email..." className="h-9 text-xs" type="email" required />
+                     <Button size="sm" variant="secondary" className="h-9 px-3">Invite</Button>
+                  </form>
+                  
+                  <div className="space-y-2">
+                    {/* List pending invites */}
+                    {allInvites.filter(i => i.profileId === profile.id && i.status === "pending").map(invite => (
+                      <div key={invite.id} className="flex justify-between items-center text-[10px] bg-amber-50 text-amber-700 px-2 py-1 rounded border border-amber-100">
+                        <span className="truncate max-w-[150px]">{invite.email}</span>
+                        <span className="uppercase font-bold opacity-70">Pending</span>
+                      </div>
+                    ))}
+                    
+                    {/* List accepted access */}
+                    {allShared.filter(s => s.profileId === profile.id).map(share => (
+                      <div key={share.parentId + share.profileId} className="flex justify-between items-center text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100">
+                        <span className="truncate max-w-[150px]">Shared with Editor</span>
+                        <span className="uppercase font-bold opacity-70">Active</span>
+                      </div>
+                    ))}
+                  </div>
+               </div>
             </CardFooter>
           </Card>
         ))}

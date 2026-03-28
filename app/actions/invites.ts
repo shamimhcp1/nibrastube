@@ -30,6 +30,14 @@ export async function inviteParent(profileId: string, email: string) {
   revalidatePath(`/parent/profiles`);
 }
 
+export async function createInviteAction(formData: FormData) {
+  const profileId = formData.get("profileId") as string;
+  const email = formData.get("email") as string;
+  if (profileId && email) {
+    await inviteParent(profileId, email);
+  }
+}
+
 export async function acceptInvite(token: string) {
   const session = await getSession();
   if (!session) redirect(`/login?callback=/invite/${token}`);
@@ -52,5 +60,6 @@ export async function acceptInvite(token: string) {
   // Update invite status
   await db.update(invites).set({ status: "accepted" }).where(eq(invites.id, invite.id));
 
+  revalidatePath("/parent/profiles");
   redirect("/parent/dashboard");
 }

@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function SignupPage() {
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ callback?: string }> }) {
+  const { callback } = await searchParams;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md shadow-2xl">
@@ -16,6 +18,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <form action={signup}>
+          <input type="hidden" name="callback" value={callback || ""} />
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>

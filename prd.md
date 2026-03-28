@@ -52,10 +52,10 @@ NibrasTube aims to provide a 100% safe, parent-curated video experience for chil
 
 ### Flow C: Shared Management
 
-1. Parent A (Husband) invites Parent B (Wife) to manage "Adam".
-2. Parent B accepts the invite.
-3. Parent B pins a "National Geographic Kids" video to "Adam".
-4. The video appears in Adam's portal immediately.
+1. Parent A (Husband) invites Parent B (Wife) to manage "Adam" via email on the **Manage Kids** page.
+2. Parent A shares the generated **Invitation Link** with Parent B.
+3. Parent B visits the link, logs in, and clicks **Accept Invitation**.
+4. Parent B now sees "Adam" in their dashboard and can pin/unpin videos.
 
 ## 5. Technical Requirements
 

@@ -1,11 +1,12 @@
-import { acceptInvite } from "@/app/actions/invites";
+import { db } from "@/lib/db";
+import { invites, profiles, users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { getSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSession } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { invites, users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { notFound, redirect } from "next/navigation";
+import { acceptInvite } from "@/app/actions/invites";
+import { notFound } from "next/navigation";
+import Link from "next/link";
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;
@@ -14,57 +15,72 @@ interface InvitePageProps {
 export default async function InvitePage({ params }: InvitePageProps) {
   const { token } = await params;
   const session = await getSession();
-
+  
   const invite = await db.query.invites.findFirst({
     where: eq(invites.token, token),
   });
 
   if (!invite) notFound();
-  
-  const fromParent = await db.query.users.findFirst({
-    where: eq(users.id, invite.fromParentId),
-  });
+
+  // If already accepted, redirect to dashboard or show message
+  if (invite.status !== "pending") {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4">
+        <Card className="max-w-md w-full shadow-lg text-center">
+          <CardHeader>
+            <CardTitle>Invite Already Used</CardTitle>
+            <CardDescription>This invitation has already been accepted or has expired.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+             <Link href="/parent/dashboard" className="w-full">
+                <Button className="w-full">Go to Dashboard</Button>
+             </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  const kid = await db.query.profiles.findFirst({ where: eq(profiles.id, invite.profileId) });
+  const fromParent = await db.query.users.findFirst({ where: eq(users.id, invite.fromParentId) });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <Card className="w-full max-w-lg shadow-2xl border-2 border-primary/20">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-4xl">
-             🤝
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4">
+      <Card className="max-w-md w-full shadow-xl border-t-4 border-t-primary">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner">
+            🤝
           </div>
-          <CardTitle className="text-3xl font-black tracking-tight">You're Invited!</CardTitle>
-          <CardDescription className="text-lg font-medium">
-             {fromParent?.name || "A parent"} has invited you to manage a kid profile on NibrasTube.
-          </CardDescription>
+          <CardTitle className="text-2xl font-black">Accept Invitation</CardTitle>
+          <CardDescription>Join the team managing {kid?.name}'s videos</CardDescription>
         </CardHeader>
-        <CardContent className="text-center pb-8 border-b italic text-slate-500">
-           "Join me in curating a safe video experience for our children."
+        <CardContent className="text-center space-y-6 py-6">
+          <div className="space-y-2">
+            <p className="text-lg text-slate-700">
+              <span className="font-bold">{fromParent?.name}</span> ({fromParent?.email}) has invited you to manage <span className="font-bold text-primary">{kid?.name}</span>'s whitelisted YouTube videos.
+            </p>
+          </div>
+          
+          {!session && (
+            <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-800 text-sm flex gap-3 items-start text-left">
+              <span className="text-xl">⚠️</span>
+              <p>You need to be logged in as a parent to accept this invite. If you don't have an account, create one first!</p>
+            </div>
+          )}
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4 pt-8">
-           {session ? (
-              <form action={async () => {
-                "use server";
-                await acceptInvite(token);
-                return;
-              }} className="w-full">
-                <Button size="lg" className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl">
-                   Accept Invitation
-                </Button>
-              </form>
-           ) : (
-              <Link href={`/login?callback=/invite/${token}`} className="w-full">
-                <Button size="lg" className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl">
-                   Log in to Accept
-                </Button>
-              </Link>
-           )}
-           <p className="text-sm text-center text-muted-foreground">
-              By accepting, you will be able to search and approved videos for this profile.
-           </p>
+        <CardFooter className="flex flex-col gap-4">
+          <form action={acceptInvite.bind(null, token)} className="w-full">
+            <Button size="lg" className="w-full py-7 text-xl font-bold shadow-lg hover:shadow-primary/20 transition-all">
+              {session ? "Accept Invitation" : "Login & Accept"}
+            </Button>
+          </form>
+          {session && (
+            <p className="text-xs text-center text-muted-foreground italic">
+              Logged in as {session.user.email}
+            </p>
+          )}
         </CardFooter>
       </Card>
     </div>
   );
 }
-
-import Link from "next/link";
